@@ -1,0 +1,19 @@
+{
+  "name": "mern-user-dashboard",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server",
+    "mock"
+  ],
+  "scripts": {
+    "dev": "concurrently -k \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm --workspace server run dev",
+    "dev:client": "npm --workspace client start",
+    "dev:mock": "npm --workspace mock start",
+    "build": "npm -w client run build && npm -w server run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
