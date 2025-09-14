@@ -30,4 +30,7 @@ This archive contains a working simplified MERN project (JavaScript) with:
    npm install
    npm run dev
    ```
+## Screenshots
+![Users List](./screenshots/users-list.png)
+![Create User Form](./screenshots/create-user.png)
 
