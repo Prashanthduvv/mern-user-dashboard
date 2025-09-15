@@ -2,6 +2,13 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+fetch(`${API_URL}/users`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(newUser),
+});
 export const fetchUsers = createAsyncThunk('users/fetch', async (params={}) => {
   const { data } = await axios.get(`${API}/users`, { params });
   return data;
