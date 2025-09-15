@@ -167,7 +167,7 @@ export default function UserForm({ initial = empty, onSubmit }) {
                             helpers.push(el.value);
                             el.value = '';
                           }
-                        }}
+                        }}  
                       >
                         Add
                       </button>
