@@ -1,15 +1,19 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
-const API_URL = import.meta.env.VITE_API_URL;
+// src/api.js
+export const API_URL = import.meta.env.VITE_API_URL;
 
-fetch(`${API_URL}/users`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(newUser),
-});
-export const fetchUsers = createAsyncThunk('users/fetch', async (params={}) => {
+// Example fetch
+fetch(`${API_URL}/users`)
+  .then(res => res.json())
+  .then(data => console.log(data));
+
+
+// 🔹 Thunks
+export const fetchUsers = createAsyncThunk('users/fetch', async (params = {}) => {
   const { data } = await axios.get(`${API}/users`, { params });
   return data;
 });
@@ -34,17 +38,34 @@ export const deleteUser = createAsyncThunk('users/delete', async (id) => {
   return id;
 });
 
+// 🔹 Slice
 const slice = createSlice({
-  name:'users',
-  initialState:{ items:[], total:0, page:1, pageSize:10, loading:false, current:null },
-  reducers:{},
+  name: 'users',
+  initialState: { items: [], total: 0, page: 1, pageSize: 10, loading: false, current: null },
+  reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchUsers.pending, (s)=>{ s.loading=true; });
-    builder.addCase(fetchUsers.fulfilled, (s,a)=>{ s.loading=false; s.items=a.payload.items; s.total=a.payload.total; s.page=a.payload.page; s.pageSize=a.payload.pageSize; });
-    builder.addCase(fetchUser.fulfilled, (s,a)=>{ s.current=a.payload; });
-    builder.addCase(createUser.fulfilled, (s,a)=>{ s.items.unshift(a.payload); s.total+=1; });
-    builder.addCase(updateUser.fulfilled, (s,a)=>{ s.items = s.items.map(u => (u._id||u.id)==(a.payload._id||a.payload.id)? a.payload : u); if (s.current && (s.current._id||s.current.id)==(a.payload._id||a.payload.id)) s.current=a.payload; });
-    builder.addCase(deleteUser.fulfilled, (s,a)=>{ s.items = s.items.filter(u => (u._id||u.id)!==a.payload); s.total-=1; });
+    builder.addCase(fetchUsers.pending, (s) => { s.loading = true; });
+    builder.addCase(fetchUsers.fulfilled, (s, a) => {
+      s.loading = false;
+      s.items = a.payload.items || a.payload;   // support API returning array
+      s.total = a.payload.total || a.payload.length || 0;
+      s.page = a.payload.page || 1;
+      s.pageSize = a.payload.pageSize || 10;
+    });
+    builder.addCase(fetchUser.fulfilled, (s, a) => { s.current = a.payload; });
+    builder.addCase(createUser.fulfilled, (s, a) => { s.items.unshift(a.payload); s.total += 1; });
+    builder.addCase(updateUser.fulfilled, (s, a) => {
+      s.items = s.items.map(u =>
+        (u._id || u.id) === (a.payload._id || a.payload.id) ? a.payload : u
+      );
+      if (s.current && (s.current._id || s.current.id) === (a.payload._id || a.payload.id)) {
+        s.current = a.payload;
+      }
+    });
+    builder.addCase(deleteUser.fulfilled, (s, a) => {
+      s.items = s.items.filter(u => (u._id || u.id) !== a.payload);
+      s.total -= 1;
+    });
   }
 });
 
