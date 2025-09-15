@@ -11,7 +11,7 @@ const UserSchema = Yup.object({
   isActive: Yup.boolean().required(),
   skills: Yup.array().of(Yup.string().min(2).max(10)).required().min(1),
   availableSlots: Yup.array().of(Yup.string().test('future','Must be future', v => !!v && new Date(v).getTime() > Date.now())).required().min(1),
-  address: Yup.object({ street: Yup.string().min(5).max(100).required(), city: Yup.string().min(2).max(50).required(), zipcode: Yup.string().matches(/^\d{5,10}$/).required() }),
+  address: Yup.object({ street: Yup.string().min(5).max(100).required(), city: Yup.string().min(2).max(50).required(), zipcode: Yup.string().matches(/^\d{5}(-\d{4})?$/).required() }),
   company: Yup.object({ name: Yup.string().min(2).max(100).required() }),
   role: Yup.mixed().oneOf(['Admin','Editor','Viewer']).required()
 });
@@ -68,7 +68,7 @@ export default function UserForm({ initial=empty, onSubmit }){
             </div>
             <div>
               <label>Zipcode</label><br/>
-              <input name="address.zipcode" value={values.address.zipcode} onChange={handleChange} pattern='/d{5}(-\{4}}?"' />
+              <input name="address.zipcode" value={values.address.zipcode} onChange={handleChange} pattern='/^\d{5}(-\d{4})?$/' />
             </div>
           </div>
 
